@@ -3,7 +3,7 @@ import { TileType } from "../components/Tile/types";
 
 type Grid = TileType[];
 
-const useGrid = () => {
+const useGrid: () => [Grid, (newGrid: Grid) => void] = () => {
   const [grid, setGrid] = useState<Grid>([
     TileType.Empty,
     TileType.Empty,
@@ -20,7 +20,7 @@ const useGrid = () => {
     setGrid(newGrid);
   };
 
-  return { grid, updateGrid };
+  return [grid, updateGrid];
 };
 
 export default useGrid;

@@ -8,7 +8,7 @@ import useGrid from "./hooks/useGrid";
 
 function App() {
   const [count, setCount] = useState(0);
-  const { grid, updateGrid } = useGrid();
+  const [grid, updateGrid] = useGrid();
 
   const play = (index: number) => {
     if (index < 0 || index > 8 || grid[index] !== TileType.Empty) return;
@@ -17,6 +17,8 @@ function App() {
     newGrid[index] = TileType.X;
     updateGrid(newGrid);
   };
+
+  const [inGame, setInGame] = useState(false);
 
   return (
     <>
@@ -40,9 +42,14 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
-      <div className="game">
-        <Grid tiles={grid} onPlay={(i) => play(i)} />
-      </div>
+      <button onClick={() => setInGame(!inGame)}>
+        {inGame ? "Leave" : "Start"} Game
+      </button>
+      {inGame && (
+        <div className="game">
+          <Grid tiles={grid} onPlay={(i) => play(i)} />
+        </div>
+      )}
     </>
   );
 }

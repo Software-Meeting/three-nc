@@ -1,10 +1,22 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import Grid from "./components/Grid";
+import { TileType } from "./components/Tile/types";
+import useGrid from "./hooks/useGrid";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+  const { grid, updateGrid } = useGrid();
+
+  const play = (index: number) => {
+    if (index < 0 || index > 8 || grid[index] !== TileType.Empty) return;
+
+    const newGrid = [...grid];
+    newGrid[index] = TileType.X;
+    updateGrid(newGrid);
+  };
 
   return (
     <>
@@ -28,8 +40,11 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <div className="game">
+        <Grid tiles={grid} onPlay={(i) => play(i)} />
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

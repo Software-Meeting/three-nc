@@ -33,7 +33,7 @@ function App() {
 
   const createGame = async (name: string) => {
     console.log('creating...');
-    const room = await client.create("my_room");
+    const room = await client.create("my_room", {name});
     if (room === null) return;
     setRoom(room);
     setState(FEState.IN_GAME);

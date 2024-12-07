@@ -10,7 +10,6 @@ import { BACKEND_URL } from './backend.ts';
 
 enum FEState {
   ENTER_GAME,
-  ENTER_NAME,
   IN_GAME,
   END
 }
@@ -18,8 +17,8 @@ enum FEState {
 function App() {
   console.log(BACKEND_URL);
   const [state, setState] = useState(FEState.ENTER_GAME);
+  const [room, setRoom] = useState<Colyseus.Room | null>(null);
   const [grid, updateGrid] = useGrid();
-  const [gameCode, updateGameCode] = useState('');
 
   const play = (index: number) => {
     if (index < 0 || index > 8 || grid[index] !== TileType.Empty) return;
@@ -32,10 +31,14 @@ function App() {
 
   const client = new Colyseus.Client(BACKEND_URL);
 
-  const attemptJoinGame = async (game: string): Promise<string> => {
-    const room = await client.joinOrCreate(game);
-    console.log(room.sessionId, "joined", room.name);
-    return room.sessionId;
+  const createGame = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formdata = new FormData(event.currentTarget);
+    const name = formdata.get("name");
+    const room = await client.create("my_room");
+    await client.joinById(room.id, {name: name});
+    setRoom(room);
+    setState(FEState.IN_GAME);
   }
 
   const [inGame, setInGame] = useState(false);
@@ -60,23 +63,13 @@ function App() {
         </div>
       )}
       {state === FEState.ENTER_GAME && (
-        <form>
-          <label>Game Code:</label>
-          <input
-            type="text"
-            onChange={(e) => updateGameCode(e.target.value)}
-          />
+        <form onSubmit={createGame}>
+          <input name="name" />
+          <button type="submit">Create New Game</button>
         </form>
       )}
-      {state === FEState.ENTER_GAME && (
-        <button onClick={() => {
-          try {
-            attemptJoinGame(gameCode);
-            setState(FEState.ENTER_NAME);
-          } catch (e) {
-            alert(e);
-          };
-        }}/>
+      {state === FEState.IN_GAME && room !== null && (
+        <h1>{room.id}</h1>
       )}
     </>
   );

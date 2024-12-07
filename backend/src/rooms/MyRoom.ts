@@ -5,6 +5,7 @@ export class MyRoom extends Room<MyRoomState> {
   maxClients = 2;
 
   onCreate(options: {}) {
+    console.log('created');
     this.setState(new MyRoomState());
 
     this.onMessage("place", (client, message: { tile: number }) => {
@@ -54,6 +55,7 @@ export class MyRoom extends Room<MyRoomState> {
       client.leave();
     }
     this.state.active = this.hasReachedMaxClients();
+    console.log("player joined")
   }
 
   onLeave(client: Client, consented: boolean) {

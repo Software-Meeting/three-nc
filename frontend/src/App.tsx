@@ -31,12 +31,17 @@ function App() {
 
   const client = new Colyseus.Client(BACKEND_URL);
 
-  const createGame = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formdata = new FormData(event.currentTarget);
-    const name = formdata.get("name");
+  const createGame = async (name: string) => {
+    console.log('creating...');
     const room = await client.create("my_room");
-    await client.joinById(room.id, {name: name});
+    if (room === null) return;
+    setRoom(room);
+    setState(FEState.IN_GAME);
+  }
+
+  const joinGame = async (name: string, gameId: string) => {
+    console.log("joining...");
+    const room = await client.joinById(gameId, {name});
     setRoom(room);
     setState(FEState.IN_GAME);
   }
@@ -63,9 +68,35 @@ function App() {
         </div>
       )}
       {state === FEState.ENTER_GAME && (
-        <form onSubmit={createGame}>
-          <input name="name" />
-          <button type="submit">Create New Game</button>
+        <form 
+          onSubmit={(event) => {
+            event.preventDefault();
+          }}
+        >
+          <label> Player Name:
+            <input type="text" name="name" id="name" required />
+          </label>
+          <br></br>
+          <label> Game Id:
+            <input type="text" name="gameId" id="gameId" />
+          </label>
+          <br></br>
+          <button
+            type="button"
+            onClick={() => {
+              createGame((document.getElementById("name") as HTMLInputElement).value);
+            }}
+          >Create New Game</button>
+
+          <button
+            type="button"
+            onClick={() => {
+              console.log('joining...');
+              joinGame(
+                (document.getElementById("name") as HTMLInputElement).value,
+                (document.getElementById("gameId") as HTMLInputElement).value
+              )
+            }}>Join Game</button>
         </form>
       )}
       {state === FEState.IN_GAME && room !== null && (

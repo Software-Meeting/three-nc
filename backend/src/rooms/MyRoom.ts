@@ -55,6 +55,7 @@ export class MyRoom extends Room<MyRoomState> {
       client.leave();
     }
     this.state.active = this.hasReachedMaxClients();
+    console.log("player joined")
   }
 
   onLeave(client: Client, consented: boolean) {
